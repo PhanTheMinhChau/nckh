@@ -1,5 +1,5 @@
 <?php 
-$servername = "183.80.98.122";
+$servername = "1.54.92.108";
 $username = "root";
 $password = "12345678";
 $dbname = "dtbase_nckh";

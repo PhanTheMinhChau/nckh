@@ -1,10 +1,16 @@
 <?php
 include('connect_db.php');
 if (date('H')>12) {
-$sql = "SELECT * FROM dtbase_nckh.schedule where date(schedule.begin) = CURDATE() and hour(schedule.begin)>12;";
+$sql = "SELECT *, id_schedule as id_sch, 100*(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch and status=2)/(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch) as thamgia,
+(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch) as siso,
+(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch)-(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch and status=2) as vang
+FROM dtbase_nckh.schedule where date(schedule.begin) = CURDATE() and hour(schedule.begin)>12;";
 $session = "c";
 } else {
-  $sql = "SELECT * FROM dtbase_nckh.schedule where date(schedule.begin) = CURDATE() and hour(schedule.begin)<12;";
+  $sql = "SELECT *, id_schedule as id_sch, 100*(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch and status=2)/(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch) as thamgia,
+(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch) as siso,
+(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch)-(SELECT count(*) FROM dtbase_nckh.attend WHERE id_schedule=id_sch and status=2) as vang
+FROM dtbase_nckh.schedule where date(schedule.begin) = CURDATE() and hour(schedule.begin)<12;";
 $session = "s";
 }
 
@@ -27,13 +33,13 @@ $result = $conn->query($sql);
   <span class="input-group-text pe-2"><i class="bi bi-search"></i> </span><input type="email" class="form-control" placeholder="Tìm kiếm lớp" aria-label="Search"></div><div></div></div></div>
 
 <div class="card-header border-bottom"><h5 class="mb-0">Điểm danh hiện tại</h5></div><div class="table-responsive"><table class="table table-hover table-nowrap"><thead class="table-light">
-  <tr><th scope="col">Lớp</th><th scope="col">Tỉ lệ đi học</th><th scope="col">Thao tác</th><th></th></tr></thead>
+  <tr><th scope="col">Lớp</th><th scope="col">Sĩ số</th><th scope="col">Vắng</th><th scope="col">Tỉ lệ đi học</th><th scope="col">Thao tác</th><th></th></tr></thead>
 
   <tbody>
 
 <?php 
 foreach ($result as $row) {
-  echo '<tr><td> <a class="text-heading font-semibold" href="#">'.$row["id_class"].'</a></td><td><div class="d-flex align-items-center"><span class="me-2">38%</span><div><div class="progress" style="width:100px"><div class="progress-bar bg-warning" role="progressbar" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100" style="width:30%"></div></div></div></div></td><td class="text-end"><a href="buoi.php?class='.$row["id_class"].'&date='.date('Ymd', strtotime($row["begin"])).'&session='.$session.'" class="btn btn-sm btn-neutral">View</a> </td></tr>';
+  echo '<tr><td> <a class="text-heading font-semibold" href="#">'.$row["id_class"].'</a></td><td> <a class="text-heading font-semibold" href="#">'.$row["siso"].'</a></td><td> <a class="text-heading font-semibold" href="#">'.$row["vang"].'</a></td><td><div class="d-flex align-items-center"><span class="me-2">'.$row["thamgia"].'%</span><div><div class="progress" style="width:100px"><div class="progress-bar bg-warning" role="progressbar" aria-valuenow="'.$row["thamgia"].'" aria-valuemin="0" aria-valuemax="100" style="width:'.$row["thamgia"].'%"></div></div></div></div></td><td class="text-end"><a href="buoi.php?class='.$row["id_class"].'&date='.date('Ymd', strtotime($row["begin"])).'&session='.$session.'" class="btn btn-sm btn-neutral">View</a> </td></tr>';
 }
  ?>
 
